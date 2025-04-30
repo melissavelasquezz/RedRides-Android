@@ -20,13 +20,13 @@ fun ProfilePic(name: String) {
     Surface(
         shape = CircleShape,
         color = Color(0xFF7E57C2),
-        modifier = Modifier.size(48.dp)
+        modifier = Modifier.size(30.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text = name.first().toString(),
                 color = Color.White,
-                fontSize = 20.sp
+                fontSize = 16.sp
             )
         }
     }

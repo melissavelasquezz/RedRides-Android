@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.big_red_rides_app.Screen.FindScreen.toScreen
 import com.example.big_red_rides_app.details.DetailScreen
 import com.example.big_red_rides_app.details.DetailsViewModel
+import com.example.big_red_rides_app.login.LoginScreen
 import com.example.big_red_rides_app.rides.RequestStatus
 import com.example.big_red_rides_app.rides.mockRideRequests
 import com.example.big_red_rides_app.rides.mockRides
@@ -75,7 +76,8 @@ class MainActivity : ComponentActivity() {
                                     rideRequests = mockRideRequests,
                                     onAcceptClicked = { request ->
                                         request.status = RequestStatus.ACCEPTED
-                                    }
+                                    },
+                                    navController = navController
                                 )
                             }
                             composable(
@@ -85,8 +87,11 @@ class MainActivity : ComponentActivity() {
                                 DetailScreen(
                                     navController = navController
                                 )
-
                             }
+                            composable<Screen.LoginScreen> {
+                                LoginScreen(navController)
+                            }
+
                         }
                     }
                 }

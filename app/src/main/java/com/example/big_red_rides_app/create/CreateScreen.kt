@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.big_red_rides_app.Screen
+import com.example.big_red_rides_app.composables.AppHeader
 
 @Composable
 fun CreateScreen(
@@ -50,6 +52,7 @@ fun CreateScreen(
          .padding(24.dp),
       verticalArrangement = Arrangement.Top
    ) {
+      AppHeader(onClick = {navController.navigate(Screen.LoginScreen)})
       Row(
          verticalAlignment = Alignment.CenterVertically
       ) {

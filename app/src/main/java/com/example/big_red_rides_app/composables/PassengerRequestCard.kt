@@ -1,5 +1,9 @@
 package com.example.big_red_rides_app.composables
 
+import androidx.compose.foundation.background
+import androidx.compose.material.icons.filled.Close
+import com.example.big_red_rides_app.rides.RideRequest
+import com.example.big_red_rides_app.rides.mockRides
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,9 +21,11 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,16 +37,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.big_red_rides_app.R
+import com.example.big_red_rides_app.rides.RequestStatus
 import com.example.big_red_rides_app.rides.Ride
 import com.example.big_red_rides_app.rides.mockProfiles
-import com.example.big_red_rides_app.rides.mockRides
+import com.example.big_red_rides_app.rides.mockRideRequests
 
 @Composable
-fun RideCard(
-    ride: Ride,
+fun PasssengerRequestCard(
+    request: RideRequest,
     onClick: () -> Unit
 ) {
-    val driverProfile = mockProfiles.find { it.id == ride.driverId}
+    val ride = mockRides.find { it.id == request.rideId }
+    val driverProfile = ride?.let { mockProfiles.find { profile -> profile.id == it.driverId } }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +82,7 @@ fun RideCard(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = ride.departureTime,
+                                text = ride!!.departureTime,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -85,7 +94,7 @@ fun RideCard(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = ride.arrivalTime,
+                                text = ride!!.arrivalTime,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -132,14 +141,37 @@ fun RideCard(
                         fontWeight = FontWeight.Bold
                     )
                 }
+                Spacer(modifier = Modifier.height(2.dp))
+                Row {
+                    Text(
+                        text = "Status: ",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = request.status.toString(),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = (
+                                if (request.status == RequestStatus.ACCEPTED) {
+                                    Color.Green
+                                } else if (request.status == RequestStatus.REQUESTED){
+                                    Color.Blue
+                                } else {
+                                    Color.Red
+                                }
+                                )
+                    )
+                }
 
             }
+            Spacer(modifier = Modifier.width(10.dp))
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Details",
+                painter = painterResource(R.drawable.cancel),
+                contentDescription = "Cancel",
                 modifier = Modifier
                     .size(20.dp)
-                    .clickable { onClick() }
+                    .clickable { onClick() } //cancel ride
             )
         }
     }
@@ -147,7 +179,9 @@ fun RideCard(
 
 @Preview
 @Composable
-fun PreviewRideCard(){
-    RideCard(ride = mockRides[0],
-        onClick = {})
+fun PreviewPassengerRequestCard(){
+    PasssengerRequestCard(
+        request = mockRideRequests[0],
+        onClick = {}
+    )
 }

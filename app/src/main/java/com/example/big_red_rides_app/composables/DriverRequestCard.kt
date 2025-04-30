@@ -1,5 +1,6 @@
 package com.example.big_red_rides_app.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,9 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.big_red_rides_app.rides.RequestStatus
 import com.example.big_red_rides_app.rides.RideRequest
+import com.example.big_red_rides_app.rides.mockRideRequests
+import com.example.big_red_rides_app.rides.mockRides
 
 @Composable
 fun DriverRequestCard(
@@ -28,6 +32,7 @@ fun DriverRequestCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.White)
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -64,4 +69,11 @@ fun DriverRequestCard(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewDriverRequestCard(){
+    DriverRequestCard(request = mockRideRequests[0],
+        onAcceptClicked = {})
 }

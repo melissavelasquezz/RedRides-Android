@@ -22,64 +22,71 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.big_red_rides_app.Screen
+import com.example.big_red_rides_app.composables.AppHeader
 import com.example.big_red_rides_app.composables.DriverRequestCard
 
 @Composable
 fun RidesScreen(
     driverRides: List<Ride>,
     rideRequests: List<RideRequest>,
-    onAcceptClicked: (RideRequest) -> Unit
+    onAcceptClicked: (RideRequest) -> Unit,
+    navController: NavController
 ){
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        items(driverRides.size) { index  ->
-            val ride = driverRides[index]
-            var expand by remember { mutableStateOf(true) }
+    Column {
+        AppHeader(onClick = {navController.navigate(Screen.LoginScreen)})
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(driverRides.size) { index  ->
+                val ride = driverRides[index]
+                var expand by remember { mutableStateOf(true) }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { expand= !expand }
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "${ride.date} Trip to ${ride.arrivalCity}",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    //icon up or down
-                }
-                HorizontalDivider(color = Color.Red, modifier = Modifier.height(2.dp))
-
-                if (expand) {
-                    val requestsForRide = rideRequests.filter { it.rideId == ride.id}
-                    if (requestsForRide.isEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { expand= !expand }
+                            .padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = "No requests yet.",
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(8.dp)
+                            text = "${ride.date} Trip to ${ride.arrivalCity}",
+                            style = MaterialTheme.typography.titleMedium
                         )
-                    } else {
-                        requestsForRide.forEach{
-                            request ->
-                            DriverRequestCard(
-                                request = request,
-                                onAcceptClicked = onAcceptClicked
+                        //icon up or down
+                    }
+                    HorizontalDivider(color = Color.Red, modifier = Modifier.height(2.dp))
+
+                    if (expand) {
+                        val requestsForRide = rideRequests.filter { it.rideId == ride.id}
+                        if (requestsForRide.isEmpty()) {
+                            Text(
+                                text = "No requests yet.",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(8.dp)
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                        } else {
+                            requestsForRide.forEach{
+                                    request ->
+                                DriverRequestCard(
+                                    request = request,
+                                    onAcceptClicked = onAcceptClicked
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 
