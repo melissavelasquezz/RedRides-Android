@@ -1,14 +1,12 @@
 package com.example.big_red_rides_app.composables
 
-import androidx.compose.foundation.background
-import androidx.compose.material.icons.filled.Close
-import com.example.big_red_rides_app.rides.RideRequest
-import com.example.big_red_rides_app.rides.mockRides
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,19 +35,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.big_red_rides_app.R
-import com.example.big_red_rides_app.rides.RequestStatus
-import com.example.big_red_rides_app.rides.Ride
-import com.example.big_red_rides_app.rides.mockProfiles
-import com.example.big_red_rides_app.rides.mockRideRequests
+import com.example.big_red_rides_app.retrofit.Ride
+import com.example.big_red_rides_app.retrofit.RideRequest
+import com.example.big_red_rides_app.retrofit.User
+
 
 @Composable
-fun PasssengerRequestCard(
+fun PassengerRequestCard(
     request: RideRequest,
-    onClick: () -> Unit
+    ride: Ride?,
+    driver: User?,
+    onCancel: () -> Unit
 ) {
-    val ride = mockRides.find { it.id == request.rideId }
-    val driverProfile = ride?.let { mockProfiles.find { profile -> profile.id == it.driverId } }
-
+    if (ride == null || driver == null) return
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,32 +55,33 @@ fun PasssengerRequestCard(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(6.dp)
-    ){
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(6.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween) {
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.weight(1f)
-            ){
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 4.dp)
-                    ){
+                    ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = ride!!.departureTime,
+                                text = ride.departureTime,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -94,7 +93,7 @@ fun PasssengerRequestCard(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = ride!!.arrivalTime,
+                                text = ride.arrivalTime,
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -103,23 +102,23 @@ fun PasssengerRequestCard(
                             Text(
                                 text = "$${ride.price}",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Color.Red,
+                                color = Color(0xFFD15429),
                                 fontWeight = FontWeight.ExtraBold
 
                             )
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
-                ){
-                    ProfilePic(driverProfile!!.name)
+                ) {
+                    ProfilePic(driver.name)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = driverProfile.name ,
+                        text = driver.name,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -149,39 +148,30 @@ fun PasssengerRequestCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = request.status.toString(),
+                        text = if (request.status == "pending") "REQUESTED" else "ACCEPTED",
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
                         color = (
-                                if (request.status == RequestStatus.ACCEPTED) {
+                                if (request.status == "yes") {
                                     Color.Green
-                                } else if (request.status == RequestStatus.REQUESTED){
-                                    Color.Blue
                                 } else {
-                                    Color.Red
+                                    Color.Blue
                                 }
                                 )
                     )
-                }
 
+
+                }
+                Spacer(modifier = Modifier.width(10.dp))
             }
-            Spacer(modifier = Modifier.width(10.dp))
             Icon(
                 painter = painterResource(R.drawable.cancel),
                 contentDescription = "Cancel",
                 modifier = Modifier
                     .size(20.dp)
-                    .clickable { onClick() } //cancel ride
+                    .clickable { onCancel() }
             )
         }
     }
 }
 
-@Preview
-@Composable
-fun PreviewPassengerRequestCard(){
-    PasssengerRequestCard(
-        request = mockRideRequests[0],
-        onClick = {}
-    )
-}

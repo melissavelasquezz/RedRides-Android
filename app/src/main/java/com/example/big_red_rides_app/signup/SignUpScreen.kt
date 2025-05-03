@@ -2,7 +2,6 @@ package com.example.big_red_rides_app.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -42,14 +40,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.big_red_rides_app.R
-import com.example.big_red_rides_app.login.LoginViewModel
 
 @Composable
-fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
+fun SignUpScreen(
+    viewModel: SignUpViewModel = hiltViewModel(),
     navController: NavController
 ){
     val uiState = viewModel.uiStateFlow.collectAsState().value
@@ -99,23 +95,38 @@ fun LoginScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Sign in",
+            text = "Get started with your account",
             style = MaterialTheme.typography.titleMedium,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(24.dp))
 
+        var name by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+        var year by remember { mutableStateOf("") }
+        var phone by remember { mutableStateOf("") }
 
+        OutlinedTextField(
+            value = name,
+            onValueChange = {name = it},
+            label = { Text(text = "Name", fontWeight = FontWeight.Bold)},
+            placeholder = { Text("First and last") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFD15429)
+            )
+
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
             value = email,
             onValueChange = {email = it},
-            label = { Text(text ="Email", fontWeight = FontWeight.Bold)},
-            placeholder = { Text("Required") },
+            label = { Text(text = "Email", fontWeight = FontWeight.Bold)},
+            placeholder = { Text("netid@cornell.edu") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFFD15429)
@@ -128,44 +139,54 @@ fun LoginScreen(
             onValueChange = {password = it},
             label = { Text(text ="Password", fontWeight = FontWeight.Bold)},
             placeholder = { Text("Required") },
-            visualTransformation = PasswordVisualTransformation(),
+//            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFFD15429)
             )
 
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = year,
+            onValueChange = {year = it},
+            label = { Text(text = "Year", fontWeight = FontWeight.Bold)},
+            placeholder = { Text("202X") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFD15429)
+            )
 
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = phone,
+            onValueChange = {phone = it},
+            label = { Text(text ="Phone", fontWeight = FontWeight.Bold)},
+            placeholder = { Text("123-456-7890") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFD15429)
+            )
+
+        )
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { viewModel.onLoginClicked(email,password) },
+            onClick = { viewModel.OnCreateAccountClicked(name, email, password, year, phone) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD15429)),
             modifier = Modifier
                 .width(160.dp)
                 .height(40.dp)
         ) {
             Text(
-                text = "Sign In",
+                text = "Sign Up",
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
         }
-        Spacer(modifier = Modifier.height(350.dp))
-        Row {
-            Text(
-                text = "Not a user?",
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "Sign up for free",
-                color = Color(0xFFD15429),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { viewModel.onSignUpClicked() }
-            )
-        }
+
         uiState.errorMessage?.let {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -174,5 +195,6 @@ fun LoginScreen(
                 fontWeight = FontWeight.SemiBold
             )
         }
+
     }
 }

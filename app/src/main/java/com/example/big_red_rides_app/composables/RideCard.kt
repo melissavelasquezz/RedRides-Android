@@ -31,16 +31,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.big_red_rides_app.R
-import com.example.big_red_rides_app.rides.Ride
-import com.example.big_red_rides_app.rides.mockProfiles
-import com.example.big_red_rides_app.rides.mockRides
+import com.example.big_red_rides_app.retrofit.Ride
+import com.example.big_red_rides_app.retrofit.User
+
 
 @Composable
 fun RideCard(
     ride: Ride,
+    driver: User?,
     onClick: () -> Unit
 ) {
-    val driverProfile = mockProfiles.find { it.id == ride.driverId}
+    if (driver == null) return
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +52,7 @@ fun RideCard(
     ){
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
             Column(
@@ -94,7 +95,7 @@ fun RideCard(
                             Text(
                                 text = "$${ride.price}",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Color.Red,
+                                color = Color(0xFFD15429),
                                 fontWeight = FontWeight.ExtraBold
 
                             )
@@ -107,10 +108,10 @@ fun RideCard(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ){
-                    ProfilePic(driverProfile!!.name)
+                    ProfilePic(driver.name)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = driverProfile.name ,
+                        text = driver.name ,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -145,9 +146,3 @@ fun RideCard(
     }
 }
 
-@Preview
-@Composable
-fun PreviewRideCard(){
-    RideCard(ride = mockRides[0],
-        onClick = {})
-}

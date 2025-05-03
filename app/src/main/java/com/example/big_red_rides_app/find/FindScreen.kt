@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -42,194 +45,126 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.big_red_rides_app.R
 import com.example.big_red_rides_app.Screen
 import com.example.big_red_rides_app.composables.AppHeader
+import com.example.big_red_rides_app.composables.LabeledTextField
 import com.example.big_red_rides_app.composables.RideCard
 import kotlinx.serialization.json.JsonNull.content
 
 @Composable
 fun FindScreen(
     navController: NavController,
-    findViewModel: FindViewModel = hiltViewModel()
+    viewModel: FindViewModel = hiltViewModel()
 ){
-    val uiState = findViewModel.uiStateFlow.collectAsState().value
+    val uiState = viewModel.uiStateFlow.collectAsState().value
 
-//    LaunchedEffect(uiState.navEvent) {
-//        uiState.navEvent?.consume { route ->
-//            navController.navigate(route)
-//        }
-//    }
+
+    LaunchedEffect(uiState.navEvent) {
+        uiState.navEvent?.consume { route ->
+            navController.navigate(route)
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(Color.White)
+            .padding(12.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        AppHeader(onClick = {navController.navigate(Screen.LoginScreen)})
-        Column (modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 4.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top
-            ){
+    ) {
+        AppHeader(onClick = { navController.navigate(Screen.LoginScreen) }, Color.White)
+
                 Column(
-                    modifier = Modifier.weight(1f)
-                ){
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Icon(
-                            painter = painterResource(R.drawable.opencircle),
-                            contentDescription = "from icon",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "From",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    OutlinedTextField(
-                        value = uiState.from,
-                        onValueChange = { findViewModel.onFromChanged(it)},
-                        label = {
-                            Text(
-                                text = "Enter a town or city",
-                                style = MaterialTheme.typography.labelLarge
-                            )},
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black,
-                            cursorColor = Color.Black,
-                            unfocusedLabelColor = Color.DarkGray
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Icon(
-                            painter = painterResource(R.drawable.locationpin),
-                            contentDescription = "to icon",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "To",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    OutlinedTextField(
-                        value = uiState.to,
-                        onValueChange = { findViewModel.onToChanged(it)},
-                        label = {
-                            Text(
-                                text = "Enter a town or city",
-                                style = MaterialTheme.typography.labelLarge
-                            )},
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            unfocusedBorderColor = Color.Black,
-                            focusedBorderColor = Color.Black,
-                            cursorColor = Color.Black,
-                            unfocusedLabelColor = Color.DarkGray
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(2.dp))
-
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-
-                IconButton(
-                    onClick = { findViewModel.swapLocations() },
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.swaploc),
-                        contentDescription = "swap to and from",
-                        modifier = Modifier.size(30.dp)
-                    )
                 }
-            }
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        LabeledTextField(
+                            icon = R.drawable.opencircle,
+                            label = "From*",
+                            description = "Enter town of city",
+                            value = uiState.from,
+                            onValueChange = { viewModel.onFromChanged(it)}
+                        )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Icon(
-                    painter = painterResource(R.drawable.calendar),
-                    contentDescription = "calendar icon",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Departure",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+                        LabeledTextField(
+                            icon = R.drawable.locationpin,
+                            label = "To*",
+                            description = "Enter town of city",
+                            value = uiState.to,
+                            onValueChange = { viewModel.onToChanged(it)}
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(
+                        onClick = { viewModel.swapLocations()},
+                        modifier = Modifier.align((Alignment.CenterVertically))
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.swaploc),
+                            contentDescription = "Swap",
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                OutlinedTextField(
-                    value = uiState.date,
-                    onValueChange = { findViewModel.onDateChanged(it)},
-                    label = {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    LabeledTextField(
+                        icon = R.drawable.calendar,
+                        label = "Departure*",
+                        description = "mm/dd/yyyy",
+                        value = uiState.date,
+                        onValueChange = { viewModel.onDateChanged(it)},
+                        modifier = Modifier.weight(1f)
+
+                    )
+
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = { viewModel.onSearch() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD15429)),
+                        modifier = Modifier.height(50.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "search"
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "mm/dd/yyyy",
+                            text = "Search",
                             style = MaterialTheme.typography.labelLarge
-                        )},
-                    singleLine = true,
-                    modifier = Modifier.weight(1f),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        unfocusedBorderColor = Color.Black,
-                        focusedBorderColor = Color.Black,
-                        cursorColor = Color.Black,
-                        unfocusedLabelColor = Color.DarkGray
-                    )
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Button(
-                    onClick = { findViewModel.onSearch() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                    modifier = Modifier.height(50.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "search"
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Search",
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                        )
+                    }
                 }
-            }
-        }
-
         Spacer(modifier = Modifier.height(12.dp))
 
+        uiState.errorMessage?.let {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = it,
+                color = Color.Red,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
         if (uiState.loading){
             Box(
                 modifier = Modifier
@@ -253,14 +188,24 @@ fun FindScreen(
             }
         } else {
             if (uiState.rideResults.isEmpty()){
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 4.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    color = Color(0xFFFAF1E6)
                 ){
-                    Text(text = "No Results",
-                        style = MaterialTheme.typography.labelLarge
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text(text = "No Results Found",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
                         )
+                    }
                 }
             } else {
                 Surface(
@@ -271,7 +216,10 @@ fun FindScreen(
                         .weight(1f)
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxSize().background(Color(0xFFFAF1E6)).padding(4.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFFAF1E6))
+                            .padding(4.dp)
                     ) {
                         Row {
                             Text(
@@ -285,20 +233,24 @@ fun FindScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(bottom = 4.dp),
-                                color = Color.Red
+                                color = Color(0xFFD15429)
                             )
                         }
 
 //                        Spacer(modifier = Modifier.height(4.dp))
 
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(16.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(uiState.rideResults) { ride ->
+                                val driver = uiState.users.find { it.id == ride.driverId}
                                 RideCard(
                                     ride = ride,
-                                    onClick = {navController.navigate("details/${ride.id}")} )
+                                    driver = driver,
+                                    onClick = { viewModel.onRideCardClicked(ride.id)} )
                             }
                         }
                     }
@@ -306,7 +258,8 @@ fun FindScreen(
             }
 
         }
+            }
+        }
 
-    }
 
-}
+

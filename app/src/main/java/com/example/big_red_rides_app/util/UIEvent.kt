@@ -1,5 +1,4 @@
-package com.cornellappdev.introandroid.a6.util
-
+package com.example.big_red_rides_app.util
 /**
  * A simple class that represents a UI event.
  *

@@ -17,7 +17,13 @@ sealed class Screen {
     data object RidesScreen : Screen()
 
     @Serializable
+    data object SignUpScreen : Screen()
+
+    @Serializable
     data object LoginScreen : Screen()
+
+    @Serializable
+    data class DetailsScreen(val rideId: Int) : Screen()
 
     fun NavBackStackEntry.toScreen(): Screen? =
         when (destination.route?.substringAfterLast(".")?.substringBefore("/")) {
@@ -25,6 +31,8 @@ sealed class Screen {
             "CreateScreen" -> toRoute<CreateScreen>()
             "RidesScreen" -> toRoute<RidesScreen>()
             "LoginScreen" -> toRoute<LoginScreen>()
+            "SignUpScreen" -> toRoute<SignUpScreen>()
+            "DetailsScreen" -> toRoute<DetailsScreen>()
             else -> null
         }
 }
